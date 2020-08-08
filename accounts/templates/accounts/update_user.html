@@ -1,0 +1,40 @@
+{% extends "scraping_from_ek/home.html" %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<div class="container">
+
+       <div class="row my-2">
+        <div class="col-">
+
+        </div>
+        <div class="col-xl">
+            <p class="h5">Если вы не нашли интерсующих вас компектующих, мы с радостью их добавим, заполните форму.</p>
+            <form method="post" action="{% url 'contact' %}">
+                {% csrf_token %}
+                {{contact_form.as_p}}
+                <button type="submit" class="btn btn-info">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row my-5">
+        <div class="col-">
+
+        </div>
+        <div class="col-xl">
+            <form method="post">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button type="submit" class="btn btn-info">Сохранить</button>
+            </form>
+            <p class="h5 my-2 text-right"> Удалить акаунт?</p>
+            <form method="post" class="my-3 text-right" action="{% url 'delete_view' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+</div>
+    {% endblock %}

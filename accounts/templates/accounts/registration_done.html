@@ -1,0 +1,19 @@
+{% extends "scraping_from_ek/home.html" %}
+
+{% block title %}Регистрация успешна{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-">
+
+        </div>
+        <div class="col-xl">
+            <h4>Регистрация прошла успешна, {{new_user.email}}</h4>
+            <p>Можете попробовать осуществить <a href="{% url 'login' %}">вход</a></p>
+
+    </div>
+
+</div>
+</div>
+{% endblock %}
