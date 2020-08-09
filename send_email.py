@@ -22,8 +22,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 qs_email = User.objects.filter(message=True).values('email')
 
 
-gpu_component = Gpu.objects.all()[:5]
-cpu_component = Cpu.objects.all()[:5]
+gpu_component = Gpu.objects.all()[::-1][:5]
+cpu_component = Cpu.objects.all()[::-1][:5]
 
 
 if gpu_component or cpu_component:
@@ -35,7 +35,7 @@ if gpu_component or cpu_component:
             html += f'<img src="{ z.img }" class="card-img-top" alt="...">'
             html += f'<p class="card-text">Ценообразование по рынку составляет: { z.wed_price }</p>'
             html += f'<a href="{ z.best_price }" class="btn btn-dark">Лучшая цена на рынке</a>'
-        for y in gpu_component:
+        for y in cpu_component:
             html += f'<h4 class="card-title">{y.name}</h4>'
             html += f'<img src="{y.img}" class="card-img-top" alt="...">'
             html += f'<p class="card-text">Ценообразование по рынку составляет: {y.wed_price}</p>'

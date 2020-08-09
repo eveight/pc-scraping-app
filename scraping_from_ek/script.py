@@ -22,7 +22,7 @@ headers = {'User-Agent': UserAgent().chrome}
 
 
 def get_url(cmp=False):
-    all_url = Url.objects.filter(manufacturer__in=['Asus', 'MSI'])
+    all_url = Url.objects.filter(manufacturer__in=['Asus', 'MSI', 'Intel', 'AMD'])
 
     urls, component = [], []
     for url in all_url:
@@ -99,61 +99,62 @@ def run_scraping():
     my_file.close()
 
 
-def dump_gpu_in_db(data, component):
-    for key in data:
-        if key['best_price'] == 'Информация отсутсвует':
+def dump_gpu_in_db(key, component):
+    if key['best_price'] == 'Информация отсутсвует':
+        pass
+    else:
+        try:
+            first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
+        except:
+            Manufacturer.objects.create(manufacturer_name=key['manufacturer'])
+            first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
+
+        new_gpu = Gpu(img=key['img'], name=key['name'], model=key['model'], wed_price=key['wed_price'],
+                      best_price=key['best_price'], manufacturer=first_manufacturer, component=component)
+        try:
+            new_gpu.save()
+        except IntegrityError:
             pass
-        else:
-            try:
-                first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
-            except:
-                Manufacturer.objects.create(manufacturer_name=key['manufacturer'])
-                first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
-
-            new_gpu = Gpu(img=key['img'], name=key['name'], model=key['model'], wed_price=key['wed_price'],
-                          best_price=key['best_price'], manufacturer=first_manufacturer, component=component)
-            try:
-                new_gpu.save()
-            except IntegrityError:
-                pass
 
 
-def dump_cpu_in_db(data, component):
-    for key in data:
-        if key['best_price'] == 'Информация отсутсвует':
+def dump_cpu_in_db(key, component):
+    if key['best_price'] == 'Информация отсутсвует':
+        pass
+    else:
+        try:
+            first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
+        except:
+            Manufacturer.objects.create(manufacturer_name=key['manufacturer'])
+            first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
+
+        new_cpu = Cpu(img=key['img'], name=key['name'], model=key['model'], wed_price=key['wed_price'],
+                      best_price=key['best_price'], manufacturer=first_manufacturer, component=component)
+        try:
+            new_cpu.save()
+        except IntegrityError:
             pass
-        else:
-            try:
-                first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
-            except:
-                Manufacturer.objects.create(manufacturer_name=key['manufacturer'])
-                first_manufacturer = Manufacturer.objects.get(manufacturer_name=key['manufacturer'])
-
-            new_cpu = Cpu(img=key['img'], name=key['name'], model=key['model'], wed_price=key['wed_price'],
-                          best_price=key['best_price'], manufacturer=first_manufacturer, component=component)
-            try:
-                new_cpu.save()
-            except IntegrityError:
-                pass
 
 
 def dump_data_in_db():
     f = open('data_scraping.txt', mode='r')
     data = json.load(f)
+    for key in data:
+        if key['manufacturer'] != 'Asus' and key['manufacturer'] != 'MSI':
+            component = Component.objects.get(component='Процессоры')
+        else:
+            component = Component.objects.get(component='Видеокарты')
 
-    component = Component.objects.get(component=get_url(cmp=True))
-
-    if component.component == 'Видеокарты':
-        dump_gpu_in_db(data, component)
-    elif component.component == 'Процессоры':
-        dump_cpu_in_db(data, component)
+        if component.component == 'Видеокарты':
+            dump_gpu_in_db(key, component)
+        elif component.component == 'Процессоры':
+            dump_cpu_in_db(key, component)
 
 
-# def main():
+def main():
     # get_url()
     # run_scraping()
-#     dump_data_in_db()
-#
-#
-# if __name__ == "__main__":
-#     main()
+    dump_data_in_db()
+
+
+if __name__ == "__main__":
+    main()
